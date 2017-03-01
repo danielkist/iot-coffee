@@ -61,6 +61,7 @@ public class SlackService {
 		Payload payload = Payload.builder().channel(channel).text(message).build();
 		try {
 			slack.send(url, payload);
+			logger.info("Webhook URL: " + url);
 		} catch (IOException e) {
 			logger.error("Ops, we have some issues to send a Slack notification");
 			e.printStackTrace();
