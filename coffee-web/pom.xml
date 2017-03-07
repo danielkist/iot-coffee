@@ -50,10 +50,15 @@
 			<scope>test</scope>
 		</dependency>
 		<dependency>
-			<groupId>com.github.seratch</groupId>
-			<artifactId>jslack</artifactId>
-			<version>1.0.8</version>
+			<groupId>org.apache.httpcomponents</groupId>
+			<artifactId>httpclient</artifactId>
+			<version>4.5.3</version>
 		</dependency>
+		<!-- <dependency> -->
+		<!-- <groupId>com.github.seratch</groupId> -->
+		<!-- <artifactId>jslack</artifactId> -->
+		<!-- <version>1.0.8</version> -->
+		<!-- </dependency> -->
 
 	</dependencies>
 

@@ -1,8 +1,17 @@
 package me.dkist.iot.web.slack;
 
-import java.io.IOException;
+import java.util.ArrayList;
 import java.util.List;
 
+import org.apache.http.HttpEntity;
+import org.apache.http.HttpResponse;
+import org.apache.http.NameValuePair;
+import org.apache.http.client.HttpClient;
+import org.apache.http.client.entity.UrlEncodedFormEntity;
+import org.apache.http.client.methods.HttpPost;
+import org.apache.http.impl.client.HttpClientBuilder;
+import org.apache.http.message.BasicNameValuePair;
+import org.apache.http.util.EntityUtils;
 import org.bson.types.ObjectId;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -10,9 +19,6 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.scheduling.annotation.Async;
 import org.springframework.stereotype.Component;
-
-import com.github.seratch.jslack.Slack;
-import com.github.seratch.jslack.api.webhook.Payload;
 
 import me.dkist.iot.web.person.Person;
 import me.dkist.iot.web.person.PersonRepository;
@@ -24,8 +30,6 @@ public class SlackService {
 	
 	@Value("${slack.webhook.url}")
 	private String slackWebhookUrl;
-	
-	private Slack slack = Slack.getInstance();
 	
 	@Autowired PersonRepository personRepository;
 	
@@ -57,13 +61,23 @@ public class SlackService {
 			logger.error("Slack Webhook not found");
 			return;
 		}
-		
-		Payload payload = Payload.builder().channel(channel).text(message).build();
-		try {
-			slack.send(url, payload);
-			logger.info("Webhook URL: " + url);
-		} catch (IOException e) {
-			logger.error("Ops, we have some issues to send a Slack notification");
+        slackWebhookRequest(url, channel, message);
+	}
+	
+	private void slackWebhookRequest(String webhook, String channel, String message) {
+		String payload = "{\"channel\": \"%s\", \"text\": \"%s\" }";
+		HttpClient httpclient = HttpClientBuilder.create().build();
+        HttpPost request = new HttpPost(webhook);
+        try {
+        	 List<NameValuePair> formparams = new ArrayList<NameValuePair>();
+        	 formparams.add(new BasicNameValuePair("payload", String.format(payload, channel, message)));
+        	 UrlEncodedFormEntity entity = new UrlEncodedFormEntity(formparams);
+             request.setEntity(entity);
+             HttpResponse response = httpclient.execute(request);
+             HttpEntity returnEntity = response.getEntity();
+             String responseString = EntityUtils.toString(returnEntity);
+             System.out.println(responseString);
+        } catch (Exception e) {
 			e.printStackTrace();
 		}
 	}
