@@ -11,9 +11,8 @@ import org.springframework.beans.factory.annotation.Value;
 import org.springframework.scheduling.annotation.Async;
 import org.springframework.stereotype.Component;
 
-import com.github.seratch.jslack.Slack;
-import com.github.seratch.jslack.api.webhook.Payload;
-
+import in.ashwanthkumar.slack.webhook.Slack;
+import in.ashwanthkumar.slack.webhook.SlackMessage;
 import me.dkist.iot.web.person.Person;
 import me.dkist.iot.web.person.PersonRepository;
 
@@ -24,8 +23,6 @@ public class SlackService {
 	
 	@Value("${slack.webhook.url}")
 	private String slackWebhookUrl;
-	
-	private Slack slack = Slack.getInstance();
 	
 	@Autowired PersonRepository personRepository;
 	
@@ -57,13 +54,14 @@ public class SlackService {
 			logger.error("Slack Webhook not found");
 			return;
 		}
-		
-		Payload payload = Payload.builder().channel(channel).text(message).build();
+		Slack slack = new Slack(url);
 		try {
-			slack.send(url, payload);
-			logger.info("Webhook URL: " + url);
+			if(channel.startsWith("#")) {
+				slack.sendToChannel(channel).push(new SlackMessage(message));
+			} else if(channel.startsWith("@")) {
+				slack.sendToUser(channel).push(new SlackMessage(message));
+			}
 		} catch (IOException e) {
-			logger.error("Ops, we have some issues to send a Slack notification");
 			e.printStackTrace();
 		}
 	}
