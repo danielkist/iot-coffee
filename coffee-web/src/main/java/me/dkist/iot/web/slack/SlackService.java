@@ -49,7 +49,6 @@ public class SlackService {
 		if(channel.equals("@johndoe")) return;
 		
 		String url = slackWebhookUrl;
-		if(url == null || url.length() == 0) url = System.getenv("SLACK_WEBHOOK_URL");
 		if(url == null) {
 			logger.error("Slack Webhook not found");
 			return;
