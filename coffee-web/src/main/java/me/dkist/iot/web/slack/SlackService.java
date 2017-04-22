@@ -54,6 +54,7 @@ public class SlackService {
 			logger.error("Slack Webhook not found");
 			return;
 		}
+		logger.info("Webhook: {}", url);
 		Slack slack = new Slack(url);
 		try {
 			if(channel.startsWith("#")) {
