@@ -61,7 +61,7 @@ public class SlackService {
 			} else if(channel.startsWith("@")) {
 				slack.sendToUser(channel).push(new SlackMessage(message));
 			}
-		} catch (IOException e) {
+		} catch (IOException e) { 
 			e.printStackTrace();
 		}
 	}
