@@ -30,18 +30,18 @@ public class SlackService {
 	public void notifyPersons(List<ObjectId> persons) {
 		if (persons == null || persons.size() == 0) return;
 		logger.info("Yay, let's tell people that we have coffee!");
-		Person maker = personRepository.findById(persons.remove(0));
-		sendSlackNotification(maker.getSlackUser(), "Coffee is ready!");
-		if(persons.size() > 0) sleep(30000);
 		persons.forEach(personId -> {
 			Person p = personRepository.findById(personId);
 			if(p != null) {
 				sendSlackNotification(p.getSlackUser(), "Coffee is ready!");
 			}
 		});
-		sleep(60000);
-		sendSlackNotification("#coffee", "Coffee is ready! Thanks to " + maker.getSlackUser());
-		
+	}
+	
+	@Async
+	public void notifyMaker(String slackUser) {
+		sleep(30000);
+		sendSlackNotification("#coffee", "Coffee is ready! Thanks to " + slackUser);
 	}
 
 	private void sendSlackNotification(String channel, String message) {

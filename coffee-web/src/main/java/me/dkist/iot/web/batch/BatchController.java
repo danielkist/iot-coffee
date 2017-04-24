@@ -13,6 +13,7 @@ import org.springframework.web.bind.annotation.RequestMethod;
 import org.springframework.web.bind.annotation.RestController;
 
 import me.dkist.iot.web.batch.Batch.BatchStatus;
+import me.dkist.iot.web.person.Person;
 import me.dkist.iot.web.person.PersonRepository;
 import me.dkist.iot.web.slack.SlackService;
 
@@ -46,6 +47,13 @@ public class BatchController {
 				b.setNumberOfCups(38); // TODO Implement calc for cups/time
 				batchRepository.save(b);
 				slackService.notifyPersons(b.getNotify());
+				
+				String mkr = "@johndoe";
+				if(b.getMaker() != null) {
+					Person maker = personRepository.findById(b.getMaker());
+					mkr = maker.getSlackUser();
+				}
+				slackService.notifyMaker(mkr);
 			}
 		}
 		return new Document("status", "ok");
